@@ -26,7 +26,7 @@ namespace ContactManager.Data.Mappings
 
             builder.Property(p => p.IsDeleted)
                 .IsRequired()
-                .HasDefaultValue(true);
+                .HasDefaultValue(false);
         }
     }
 }
