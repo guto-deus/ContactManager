@@ -15,16 +15,16 @@ namespace ContactManager.Pages.Contacts
             _context = context;
         }
 
-        // Só para exibir os dados na tela de confirmação
         [BindProperty]
         public Contact Contact { get; set; } = null!;
 
-        // GET /Contacts/Delete/5
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Contact = await _context.Contacts
+            var contact = await _context.Contacts
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == id);
+
+            Contact = contact!;
 
             if (Contact == null)
             {
@@ -34,19 +34,19 @@ namespace ContactManager.Pages.Contacts
             return Page();
         }
 
-        // POST /Contacts/Delete/5
         public async Task<IActionResult> OnPostAsync(int id)
         {
             var contact = await _context.Contacts
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (contact == null)
+            Contact = contact!;
+
+            if (Contact == null)
             {
                 return NotFound();
             }
 
-            // Soft delete
-            contact.IsDeleted = true;
+            Contact.IsDeleted = true;
 
             await _context.SaveChangesAsync();
 

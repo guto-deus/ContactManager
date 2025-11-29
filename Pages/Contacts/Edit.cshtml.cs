@@ -18,7 +18,6 @@ namespace ContactManager.Pages.Contacts
         [BindProperty]
         public ContactInputModel Input { get; set; } = new();
 
-        // GET /Contacts/Edit/5
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var contact = await _context.Contacts
@@ -30,7 +29,6 @@ namespace ContactManager.Pages.Contacts
                 return NotFound();
             }
 
-            // Preenche o Input com os dados do banco
             Input = new ContactInputModel
             {
                 Id = contact.Id,
@@ -42,7 +40,6 @@ namespace ContactManager.Pages.Contacts
             return Page();
         }
 
-        // POST /Contacts/Edit/5
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -50,7 +47,6 @@ namespace ContactManager.Pages.Contacts
                 return Page();
             }
 
-            // Verificar se o contato ainda existe
             var contact = await _context.Contacts
                 .FirstOrDefaultAsync(c => c.Id == Input.Id && !c.IsDeleted);
 
@@ -59,14 +55,12 @@ namespace ContactManager.Pages.Contacts
                 return NotFound();
             }
 
-            // Atualiza os dados
             contact.Name = Input.Name;
             contact.ContactNumber = Input.ContactNumber;
             contact.Email = Input.Email;
 
             await _context.SaveChangesAsync();
 
-            // Volta para a lista
             return RedirectToPage("/Index");
         }
 

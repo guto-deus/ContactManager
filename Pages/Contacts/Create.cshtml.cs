@@ -2,7 +2,6 @@
 using ContactManager.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace ContactManager.Pages.Contacts
@@ -18,25 +17,20 @@ namespace ContactManager.Pages.Contacts
             _logger = logger;
         }
 
-        // Modelo que será preenchido pelo form
         [BindProperty]
         public ContactInputModel Input { get; set; } = new();
 
-        // GET: exibe o formulário
         public void OnGet()
         {
         }
 
-        // POST: recebe o formulário
         public async Task<IActionResult> OnPostAsync()
         {
-            // Valida data annotations primeiro
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // Mapear Input -> Entidade
             var contact = new Contact
             {
                 Name = Input.Name,
@@ -48,11 +42,9 @@ namespace ContactManager.Pages.Contacts
             _context.Contacts.Add(contact);
             await _context.SaveChangesAsync();
 
-            // Depois de salvar, volta para a lista
             return RedirectToPage("/Index");
         }
 
-        // ViewModel / InputModel com validações
         public class ContactInputModel
         {
             [Required(ErrorMessage = "O nome é obrigatório.")]
