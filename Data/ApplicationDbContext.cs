@@ -5,27 +5,42 @@ namespace ContactManagement.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
-        public DbSet<Contact> Contacts => Set<Contact>();
+        public DbSet<Contact> Contacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-            modelBuilder.Entity<Contact>()
-                .HasIndex(c => c.ContactNumber)
-                .IsUnique();
+            foreach (var property in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetProperties()
+                    .Where(p => p.ClrType == typeof(string))))
+                property.SetColumnType("varchar(100)");
 
-            modelBuilder.Entity<Contact>()
-                .HasIndex(c => c.Email)
-                .IsUnique();
+            foreach (var relationship in modelBuilder.Model
+                .GetEntityTypes()
+                .SelectMany(e => e.GetForeignKeys()))
+                relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
+        }
 
-            modelBuilder.Entity<Contact>()
-                .HasQueryFilter(c => !c.IsDeleted);
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("DataCreate") != null))
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Property("DataCreate").CurrentValue = DateTime.Now;
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property("DataCreate").IsModified = false;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }
