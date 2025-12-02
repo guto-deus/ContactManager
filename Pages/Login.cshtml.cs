@@ -1,42 +1,52 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Security.Claims;
 
-public class LoginModel : PageModel
+namespace ContactManager.Pages
 {
-    [BindProperty]
-    public string Username { get; set; } = string.Empty;
-
-    [BindProperty]
-    public string Password { get; set; } = string.Empty;
-
-    public void
-        OnGet()
+    [AllowAnonymous]
+    public class LoginModel : PageModel
     {
-    }
+        [BindProperty]
+        public string Username { get; set; } = string.Empty;
 
-    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
-    {
-        if (Username == "admin" && Password == "123")
+        [BindProperty]
+        public string Password { get; set; } = string.Empty;
+
+        public void OnGet()
         {
-            var claims = new List<Claim>
+
+        }
+
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+        {
+            if (Username == "admin" && Password == "123")
+            {
+                var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, Username)
             };
 
-            var identity = new ClaimsIdentity(claims, "MyCookieAuth");
-            var principal = new ClaimsPrincipal(identity);
+                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync("MyCookieAuth", principal);
+                var authProps = new AuthenticationProperties
+                {
+                    IsPersistent = false
+                };
 
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
+                await HttpContext.SignInAsync("MyCookieAuth", principal, authProps);
 
-            return RedirectToPage("/Index");
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
+                return RedirectToPage("/Index");
+            }
+
+            ModelState.AddModelError(string.Empty, "Usuário ou senha inválidos.");
+            return Page();
         }
-
-        ModelState.AddModelError(string.Empty, "Usuário ou senha inválidos.");
-        return Page();
     }
 }

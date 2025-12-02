@@ -4,14 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContactManager.Pages
+namespace ContactManager.Pages.Contacts
 {
     [Authorize]
-    public class IndexModel : PageModel
+    public class ListModel : PageModel
     {
+
         private readonly ApplicationDbContext _context;
 
-        public IndexModel(ApplicationDbContext context)
+        public ListModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -20,7 +21,7 @@ namespace ContactManager.Pages
 
         public async Task OnGetAsync()
         {
-            var contato = await _context.Contacts.Where(p => p.IsDeleted == false).ToListAsync();
+            var contato = await _context.Contacts.ToListAsync();
 
             Contacts = contato;
         }

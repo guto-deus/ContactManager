@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContactManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251129132247_Version 29112025.1")]
-    partial class Version291120251
+    [Migration("20251202211634_Versao 1")]
+    partial class Versao1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,7 +37,7 @@ namespace ContactManager.Migrations
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true);
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Name")
                         .IsRequired()

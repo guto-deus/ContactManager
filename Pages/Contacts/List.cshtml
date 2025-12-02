@@ -1,0 +1,31 @@
+﻿@page
+@model ContactManager.Pages.Contacts.ListModel
+@{
+    ViewData["Title"] = "Todos os Contatos";
+}
+
+<h1>Lista de Contatos</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Contato</th>
+            <th>Email</th>
+            <th>Ativo?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Contacts)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.ContactNumber</td>
+                <td>@item.Email</td>
+                <td>@(item.IsDeleted ? "Não" : "Sim")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="/Index" class="btn btn-secondary mt-3">Voltar</a>
