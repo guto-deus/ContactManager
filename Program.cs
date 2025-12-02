@@ -6,11 +6,19 @@ var builder = WebApplication.CreateBuilder(args);
 var mariaDbConnectionString = builder.Configuration.GetConnectionString("MariaDB");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        mariaDbConnectionString,
-        ServerVersion.AutoDetect(mariaDbConnectionString)
-    )
-);
+{
+    var serverVersion = new MySqlServerVersion(new Version(10, 5, 0));
+
+    options.UseMySql(mariaDbConnectionString, serverVersion, mySqlOptions =>
+    {
+        mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        );
+    });
+});
+
 
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //    options.UseNpgsql(
